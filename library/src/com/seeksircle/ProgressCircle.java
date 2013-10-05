@@ -168,6 +168,10 @@ public class ProgressCircle extends View
 		hsvColorB[1] = interpolate(hsvColorA[1], hsvColorB[1], bias);
 		hsvColorB[2] = interpolate(hsvColorA[2], hsvColorB[2], bias);
 		
+		// NOTE For some reason the method HSVToColor fail in edit mode. Just use the start color for now
+		if (isInEditMode())
+			return colorA;
+
 		return Color.HSVToColor(hsvColorB);
 	}
 	
