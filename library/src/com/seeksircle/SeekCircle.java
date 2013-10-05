@@ -1,16 +1,11 @@
 package com.seeksircle;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.ProgressBar;
 
-public class SeekCircle extends View
+public class SeekCircle extends ProgressCircle
 {
 	/**
 	 * A callback that notifies clients when the progress level has been
@@ -74,58 +69,7 @@ public class SeekCircle extends View
 		mOnSeekCircleChangeListener = listener;
 	}
 	
-	private float mRingBias = 0.10f;
-	private float mSectionRatio = 4.0f;
-	private RectF mSectionRect = new RectF();
-	private float mSectionHeight;
-	
-	private float mRadius;
-	
-	private int mMaxProgress = 100;
-	private int mProgress = 0;
-	
-	//private float mRevolutions = 0.0f;
-	
-	private float mCenterX;
-	private float mCenterY;
-	
-	private Paint mPaint;
-	private int mColor1;
-	private int mColor2;
-	private int mInactiveColor;
-	
 	private boolean mTrackingTouch = false;
-	
-	{
-		mPaint = new Paint();
-		mPaint.setAntiAlias(true);
-		mPaint.setStyle(Paint.Style.FILL);
-		
-		mColor1 = Color.parseColor("#ff33b5e5");
-		mColor2 = Color.parseColor("#ffff5900");
-		mInactiveColor = Color.parseColor("#ff404040");
-		
-		mPaint.setColor(mColor1); // Set default
-	}
-	
-	private float interpolate(float a, float b, float proportion)
-	{
-		return (a + ((b - a) * proportion));
-	}
-	
-	/** Returns an interpolated color, between <code>a</code> and <code>b</code> */
-	private int interpolateColor(int a, int b, float proportion)
-	{
-		float[] hsva = new float[3];
-		float[] hsvb = new float[3];
-		Color.colorToHSV(a, hsva);
-		Color.colorToHSV(b, hsvb);
-		for (int i = 0; i < 3; i++)
-		{
-			hsvb[i] = interpolate(hsva[i], hsvb[i], proportion);
-		}
-		return Color.HSVToColor(hsvb);
-	}
 	
 	public SeekCircle(Context context, AttributeSet attrs, int defStyle)
 	{
@@ -140,73 +84,6 @@ public class SeekCircle extends View
 	public SeekCircle(Context context)
 	{
 		super(context);
-	}
-	
-	private void updateDimensions(int width, int height)
-	{
-		// Update center position
-		mCenterX = width / 2.0f;
-		mCenterY = height / 2.0f;
-		
-		// Find shortest dimension
-		int diameter = Math.min(width, height);
-		
-		float outerRadius = diameter / 2;
-		float sectionHeight = outerRadius * mRingBias;
-		float sectionWidth = sectionHeight / mSectionRatio;
-		
-		mRadius = outerRadius - sectionHeight / 2;
-		mSectionRect.set(-sectionWidth / 2, -sectionHeight / 2, sectionWidth / 2, sectionHeight / 2);
-		mSectionHeight = sectionHeight;
-	}
-	
-	@Override
-	protected synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-	{
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		
-		updateDimensions(getWidth(), getHeight());
-	}
-	
-	@Override
-	protected void onSizeChanged(int w, int h, int oldw, int oldh)
-	{
-		super.onSizeChanged(w, h, oldw, oldh);
-		
-		updateDimensions(w, h);
-	}
-	
-	@Override
-	protected void onDraw(Canvas canvas)
-	{
-		// Center our canvas
-		canvas.translate(mCenterX, mCenterY);
-		
-		float rotation = 360.0f / (float) mMaxProgress;
-		for (int i = 0; i < mMaxProgress; ++i)
-		{
-			canvas.save();
-			
-			canvas.rotate((float) i * rotation);
-			canvas.translate(0, -mRadius);
-			
-			if (i < mProgress)
-			{
-				float bias = (float) i / (float) (mMaxProgress - 1);
-				int color = interpolateColor(mColor1, mColor2, bias);
-				mPaint.setColor(color);
-			}
-			else
-			{
-				canvas.scale(0.7f, 0.7f);
-				mPaint.setColor(mInactiveColor);
-			}
-			
-			canvas.drawRect(mSectionRect, mPaint);
-			canvas.restore();
-		}
-		
-		super.onDraw(canvas);
 	}
 	
 	public boolean onTouchEvent(MotionEvent event)
@@ -259,7 +136,7 @@ public class SeekCircle extends View
 			
 			// // Bypass clamping if it's a down event
 			// if (event.getAction() == MotionEvent.ACTION_DOWN)
-			updateProgress(progress, true);
+			updateTouchProgress(progress);
 			
 			// Avoid flipping at the top.
 			// else if ((Math.abs(progress - mProgress) < mMaxProgress/2) &&
@@ -283,64 +160,28 @@ public class SeekCircle extends View
 		return super.onTouchEvent(event);
 	}
 	
-	/**
-	 * Get max progress
-	 * 
-	 * @return Max progress
-	 */
-	public float getMax()
-	{
-		return mMaxProgress;
-	}
+	// TODO Make this easier to override without having to re-implement it.
 	
-	/**
-	 * Set max progress
-	 * 
-	 * @param max
-	 */
-	public void setMax(int max)
+	@Override
+	protected boolean updateProgress(int progress)
 	{
-		int newMax = Math.max(max, 1);
-		if (newMax != mMaxProgress)
-			mMaxProgress = newMax;
-		
-		updateProgress(mProgress, false);
-		invalidate();
-	}
-	
-	/**
-	 * Get Progress
-	 * 
-	 * @return progress
-	 */
-	public int getProgress()
-	{
-		return mProgress;
-	}
-	
-	/**
-	 * Set progress
-	 * 
-	 * @param progress
-	 */
-	public void setProgress(int progress)
-	{
-		updateProgress(progress, false);
-	}
-	
-	private void updateProgress(int progress, boolean fromUser)
-	{
-		// Clamp progress
-		progress = Math.max(0, Math.min(mMaxProgress, progress));
-		
-		if (progress != mProgress)
+		boolean result = super.updateProgress(progress);
+		if (result)
 		{
-			mProgress = progress;
-			
 			if (mOnSeekCircleChangeListener != null)
 				mOnSeekCircleChangeListener.onProgressChanged(this, progress, true);
-			
-			invalidate();
+		}
+		
+		return result;
+	}
+	
+	private void updateTouchProgress(int progress)
+	{
+		boolean result = updateProgress(progress);
+		if (result)
+		{
+			if (mOnSeekCircleChangeListener != null)
+				mOnSeekCircleChangeListener.onProgressChanged(this, progress, true);
 		}
 	}
 }

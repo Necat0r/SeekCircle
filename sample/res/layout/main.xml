@@ -2,12 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SampleActivity" >
-    
+    tools:context=".SampleActivity" xmlns:app="http://schemas.android.com/apk/res/com.seekcircle.sample">
+
     <com.seeksircle.SeekCircle
         android:id="@+id/seekCircle"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:progress="25" />
 
     <TextView
         android:id="@+id/textProgress"
