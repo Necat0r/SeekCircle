@@ -67,8 +67,10 @@ public class SeekCircle extends ProgressCircle
 	{
 		mOnSeekCircleChangeListener = listener;
 	}
-	
+
 	private boolean mTrackingTouch = false;
+	private int mRevolutions = 0;
+	private float mOldX;
 	
 	public SeekCircle(Context context, AttributeSet attrs, int defStyle)
 	{
@@ -85,15 +87,14 @@ public class SeekCircle extends ProgressCircle
 		super(context);
 	}
 	
+	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		float x = event.getX();
-		float y = event.getY();
+		// Right hand coordinates X to the right, Y up
+		float x = event.getX() - mCenterX;
+		float y = mCenterY - event.getY();
 		
-		float dx = mCenterX - x;
-		float dy = y - mCenterY;
-		
-		float distance = (float) Math.sqrt(dx * dx + dy * dy);
+		float distance = (float) Math.sqrt(x * x + y * y);
 		
 		boolean inRange = Math.abs(distance - mRadius) <= mSectionHeight;
 		boolean inDeadZone = false; // distance <= mRadius * 0.2f; // 20%
@@ -107,6 +108,8 @@ public class SeekCircle extends ProgressCircle
 				if (inRange)
 				{
 					mTrackingTouch = true;
+					mOldX = x;
+					mRevolutions = 0;
 					updateProgress = true;
 				}
 				
@@ -130,36 +133,51 @@ public class SeekCircle extends ProgressCircle
 		
 		if (updateProgress)
 		{
-			float bias = (float) ((Math.atan2(dx, dy) + Math.PI) / (Math.PI * 2.0));
-			int progress = Math.round(bias * ((float) mMaxProgress));
-			
-			// // Bypass clamping if it's a down event
-			// if (event.getAction() == MotionEvent.ACTION_DOWN)
+			// Calculate absolute position [0, 1] with 0 & 1 both at 12-o-clock
+			float position = (float) ((Math.atan2(-x, -y) + Math.PI) / (Math.PI * 2.0));
+			int progress = Math.round(position * ((float) mMaxProgress));
+
+			if (event.getAction() != MotionEvent.ACTION_DOWN)
+			{
+				updateRevolutions(x, y);
+				
+				float absPosition = (float)mRevolutions + position;
+				
+				// Clamp progress
+				if (absPosition < 0.0f)
+					progress = 0;
+				else if (absPosition > 1.0f)
+					progress = mMaxProgress;
+			}
+
+			mOldX = x;
 			updateTouchProgress(progress);
-			
-			// Avoid flipping at the top.
-			// else if ((Math.abs(progress - mProgress) < mMaxProgress/2) &&
-			// notAlreadyTrackingRevolutions)
-			// {
-			//
-			//
-			// updateProgress(progress, true);
-			//
-			// }
-			
-			// TODO Clamp to extremes at the top...
-			// TODO Bypass clamping if it's the down event.
-			// TODO Keep track on expected rotation position (like it's whinded
-			// up and clamped at the top). Thus having to go back to reduce down
-			// again.
 			
 			return true;
 		}
 		
 		return super.onTouchEvent(event);
 	}
-	
-	// TODO Make this easier to override without having to re-implement it.
+
+	/**
+	 * Update the number of revolutions we're at
+	 * @param x X position  
+	 * @param y Y position
+	 */
+	private void updateRevolutions(float x, float y)
+	{
+		// We're in the upper half and X just flipped
+		boolean leftFlip = y > 0.0f && mOldX >= 0.0f && x < 0.0f;
+		boolean rightFlip = y > 0.0f && mOldX <= 0.0f && x > 0.0f;
+		
+		if (leftFlip)
+			mRevolutions -= 1.0f;
+		else if (rightFlip)
+			mRevolutions += 1.0f;
+		
+		// Clamp windings to [-1, 1]
+		mRevolutions = Math.max(-1, Math.min(1, mRevolutions));
+	}
 	
 	@Override
 	protected boolean updateProgress(int progress)
@@ -167,8 +185,9 @@ public class SeekCircle extends ProgressCircle
 		boolean result = super.updateProgress(progress);
 		if (result)
 		{
+			// Reset position to match
 			if (mOnSeekCircleChangeListener != null)
-				mOnSeekCircleChangeListener.onProgressChanged(this, progress, true);
+				mOnSeekCircleChangeListener.onProgressChanged(this, progress, false);
 		}
 		
 		return result;
@@ -176,7 +195,7 @@ public class SeekCircle extends ProgressCircle
 	
 	private void updateTouchProgress(int progress)
 	{
-		boolean result = updateProgress(progress);
+		boolean result = super.updateProgress(progress);
 		if (result)
 		{
 			if (mOnSeekCircleChangeListener != null)
