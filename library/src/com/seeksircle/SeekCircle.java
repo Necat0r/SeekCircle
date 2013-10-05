@@ -3,7 +3,6 @@ package com.seeksircle;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.widget.ProgressBar;
 
 public class SeekCircle extends ProgressCircle
 {
@@ -21,12 +20,12 @@ public class SeekCircle extends ProgressCircle
 		 * fromUser parameter to distinguish user-initiated changes from those
 		 * that occurred programmatically.
 		 * 
-		 * @param seekBar
-		 *            The SeekBar whose progress has changed
+		 * @param seekCircle
+		 *            The SeekCircle whose progress has changed
 		 * @param progress
 		 *            The current progress level. This will be in the range
 		 *            0..max where max was set by
-		 *            {@link ProgressBar#setMax(int)}. (The default value for
+		 *            {@link ProgressCircle#setMax(int)}. (The default value for
 		 *            max is 100.)
 		 * @param fromUser
 		 *            True if the progress change was initiated by the user.
@@ -37,8 +36,8 @@ public class SeekCircle extends ProgressCircle
 		 * Notification that the user has started a touch gesture. Clients may
 		 * want to use this to disable advancing the seek circle.
 		 * 
-		 * @param seekBar
-		 *            The SeekBar in which the touch gesture began
+		 * @param seekCircle
+		 *            The SeekCircle in which the touch gesture began
 		 */
 		void onStartTrackingTouch(SeekCircle seekCircle);
 		
