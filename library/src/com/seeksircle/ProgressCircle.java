@@ -67,15 +67,15 @@ public class ProgressCircle extends View
 	
 	private void initAttributes(Context context, AttributeSet attrs)
 	{
-		TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.ProgressCircle, 0, 0);
+		TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SeekCircle, 0, 0);
 		try
 		{
 			// Read and clamp max
-			int max = attributes.getInteger(R.styleable.ProgressCircle_max, 100);
+			int max = attributes.getInteger(R.styleable.SeekCircle_max, 100);
 			mMaxProgress = Math.max(max, 1); 
 			
 			// Read and clamp progress
-			int progress = attributes.getInteger(R.styleable.ProgressCircle_progress, 0);
+			int progress = attributes.getInteger(R.styleable.SeekCircle_progress, 0);
 			mProgress = Math.max(Math.min(progress, mMaxProgress), 0); 
 		}
 		finally

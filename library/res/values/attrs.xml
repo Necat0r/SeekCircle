@@ -1,6 +1,6 @@
 <resources>
 
-    <declare-styleable name="ProgressCircle">
+    <declare-styleable name="SeekCircle">
         <attr name="max" format="integer" value="100" />
         <attr name="progress" format="integer" value="0" />
     </declare-styleable>
