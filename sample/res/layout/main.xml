@@ -1,8 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res/com.seekcircle.sample"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SampleActivity" xmlns:app="http://schemas.android.com/apk/res/com.seekcircle.sample">
+    tools:context=".SampleActivity" >
 
     <com.seeksircle.SeekCircle
         android:id="@+id/seekCircle"
