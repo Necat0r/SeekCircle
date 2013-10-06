@@ -1,4 +1,4 @@
-package com.seeksircle;
+package com.seekcircle;
 
 import android.content.Context;
 import android.util.AttributeSet;

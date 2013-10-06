@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.seekcircle.SeekCircle;
 import com.seekcircle.sample.R;
-import com.seeksircle.SeekCircle;
 
 public class SampleActivity extends Activity
 {

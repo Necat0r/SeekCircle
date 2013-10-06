@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".SampleActivity" >
 
-    <com.seeksircle.SeekCircle
+    <com.seekcircle.SeekCircle
         android:id="@+id/seekCircle"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

@@ -1,4 +1,4 @@
-package com.seeksircle;
+package com.seekcircle;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,8 +13,8 @@ import com.seekcircle.library.R;
 
 public class ProgressCircle extends View
 {
-	private float mRingBias = 0.10f;
-	private float mSectionRatio = 4.0f;
+	private float mRingBias = 0.15f;
+	private float mSectionRatio = 5.0f;
 	private RectF mSectionRect = new RectF();
 	protected float mSectionHeight;
 	
@@ -105,7 +105,13 @@ public class ProgressCircle extends View
 	@Override
 	protected synchronized void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
 	{
-		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		int width = MeasureSpec.getSize(widthMeasureSpec);
+		int height = MeasureSpec.getSize(heightMeasureSpec);
+		
+		if (width > height)
+			super.onMeasure(heightMeasureSpec, widthMeasureSpec);
+		else
+			super.onMeasure(widthMeasureSpec, widthMeasureSpec);
 		
 		updateDimensions(getWidth(), getHeight());
 	}
