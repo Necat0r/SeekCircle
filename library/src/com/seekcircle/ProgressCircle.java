@@ -38,12 +38,6 @@ public class ProgressCircle extends View
 		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
 		mPaint.setStyle(Paint.Style.FILL);
-		
-		mColor1 = Color.parseColor("#ff33b5e5");
-		mColor2 = Color.parseColor("#ffff5900");
-		mInactiveColor = Color.parseColor("#ff404040");
-		
-		mPaint.setColor(mColor1); // Set default
 	}
 	
 	public ProgressCircle(Context context, AttributeSet attrs, int defStyle)
@@ -76,7 +70,12 @@ public class ProgressCircle extends View
 			
 			// Read and clamp progress
 			int progress = attributes.getInteger(R.styleable.SeekCircle_progress, 0);
-			mProgress = Math.max(Math.min(progress, mMaxProgress), 0); 
+			mProgress = Math.max(Math.min(progress, mMaxProgress), 0);
+			
+			mColor1 = attributes.getColor(R.styleable.SeekCircle_startColor, Color.parseColor("#ff33b5e5"));
+			mColor2 = attributes.getColor(R.styleable.SeekCircle_endColor, Color.parseColor("#ffff5900"));
+			mInactiveColor = attributes.getColor(R.styleable.SeekCircle_inactiveColor, Color.parseColor("#ff404040"));
+			mPaint.setColor(mColor1);
 		}
 		finally
 		{
