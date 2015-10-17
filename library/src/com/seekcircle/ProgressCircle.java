@@ -20,22 +20,18 @@ public class ProgressCircle extends View
 	
 	protected float mRadius;
 	
-	protected int mMaxProgress;
-	protected int mProgress;
+	protected int mMaxProgress = 100;
+	protected int mProgress = 0;
 	
 	protected float mCenterX;
 	protected float mCenterY;
 	
-	private Paint mPaint;
-	private int mColor1;
-	private int mColor2;
-	private int mInactiveColor;
+	private Paint mPaint = new Paint();
+	private int mColor1 = Color.parseColor("#ff33b5e5");
+	private int mColor2 = Color.parseColor("#ffff5900");
+	private int mInactiveColor = Color.parseColor("#ff404040");
 	
 	{
-		mMaxProgress = 100;
-		mProgress = 0;
-		
-		mPaint = new Paint();
 		mPaint.setAntiAlias(true);
 		mPaint.setStyle(Paint.Style.FILL);
 	}
@@ -75,7 +71,9 @@ public class ProgressCircle extends View
 			mColor1 = attributes.getColor(R.styleable.SeekCircle_startColor, Color.parseColor("#ff33b5e5"));
 			mColor2 = attributes.getColor(R.styleable.SeekCircle_endColor, Color.parseColor("#ffff5900"));
 			mInactiveColor = attributes.getColor(R.styleable.SeekCircle_inactiveColor, Color.parseColor("#ff404040"));
-			mPaint.setColor(mColor1);
+			
+			mRingBias = attributes.getFloat(R.styleable.SeekCircle_ringBias, 0.15f);
+			mSectionRatio = attributes.getFloat(R.styleable.SeekCircle_sectionRatio, 5.0f);
 		}
 		finally
 		{
@@ -223,6 +221,16 @@ public class ProgressCircle extends View
 	public void setProgress(int progress)
 	{
 		updateProgress(progress);
+	}
+	
+	/**
+	 * Get ratio
+	 * 
+	 * @return progress ratio compared to max progress 
+	 */
+	public float getRatio()
+	{
+		return (float)mProgress / (float)mMaxProgress;
 	}
 	
 	/**

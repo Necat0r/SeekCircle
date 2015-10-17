@@ -6,6 +6,8 @@
         <attr name="startColor" format="color" />
         <attr name="endColor" format="color" />
         <attr name="inactiveColor" format="color" />
-    </declare-styleable>
+        <attr name="ringBias" format="float" />
+        <attr name="sectionRatio" format="float" />
+        </declare-styleable>
 
 </resources>
