@@ -71,6 +71,7 @@ public class SeekCircle extends ProgressCircle
 	private boolean mTrackingTouch = false;
 	private int mRevolutions = 0;
 	private float mOldX;
+	private boolean enabled;
 	
 	public SeekCircle(Context context, AttributeSet attrs, int defStyle)
 	{
@@ -86,86 +87,89 @@ public class SeekCircle extends ProgressCircle
 	{
 		super(context);
 	}
-	
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public boolean isEnabled() {
+		return enabled;
+	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
 		// TODO Handle return value better.
 		// TODO Moving outside view doesn't cancel notification nor progress updates
-		
+
+		if (!enabled) { return false; }
+
 		// Right hand coordinates X to the right, Y up
 		float x = event.getX() - mCenterX;
 		float y = mCenterY - event.getY();
-		
+
 		float distance = (float) Math.sqrt(x * x + y * y);
-		
+
 		boolean inRange = Math.abs(distance - mRadius) <= mSectionHeight;
-		
+
 		boolean updateProgress = false;
-		
-		switch (event.getAction())
-		{
+
+		switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
-				if (inRange)
-				{
+				if (inRange) {
 					mTrackingTouch = true;
 					mOldX = x;
 					mRevolutions = 0;
 					updateProgress = true;
 				}
-				
+
 				break;
-			
+
 			case MotionEvent.ACTION_MOVE:
 				if (mTrackingTouch)
 					updateProgress = true;
 				break;
-			
+
 			case MotionEvent.ACTION_UP:
 				if (mTrackingTouch)
 					updateProgress = true;
 				mTrackingTouch = false;
 				break;
-			
+
 			case MotionEvent.ACTION_CANCEL:
 				mTrackingTouch = false;
 				break;
 		}
-		
-		if (updateProgress)
-		{
+
+		if (updateProgress) {
 			// Calculate absolute position [0, 1] with 0 & 1 both at 12-o-clock
 			float position = (float) ((Math.atan2(-x, -y) + Math.PI) / (Math.PI * 2.0));
 			int progress = Math.round(position * ((float) mMaxProgress));
-			
-			if (event.getAction() != MotionEvent.ACTION_DOWN)
-			{
+
+			if (event.getAction() != MotionEvent.ACTION_DOWN) {
 				updateRevolutions(x, y);
-				
+
 				float absPosition = (float) mRevolutions + position;
-				
+
 				// Clamp progress
 				if (absPosition < 0.0f)
 					progress = 0;
 				else if (absPosition > 1.0f)
 					progress = mMaxProgress;
 			}
-			
+
 			mOldX = x;
 			updateTouchProgress(progress);
-			
-			if (event.getAction() == MotionEvent.ACTION_DOWN && mOnSeekCircleChangeListener != null)
-			{
+
+			if (event.getAction() == MotionEvent.ACTION_DOWN && mOnSeekCircleChangeListener != null) {
 				mOnSeekCircleChangeListener.onStartTrackingTouch(this);
-			}
-			else if (event.getAction() == MotionEvent.ACTION_UP && mOnSeekCircleChangeListener != null)
-			{
+			} else if (event.getAction() == MotionEvent.ACTION_UP && mOnSeekCircleChangeListener != null) {
 				mOnSeekCircleChangeListener.onStopTrackingTouch(this);
 			}
-			
+
 			return true; //super.onTouchEvent(event);
 		}
-		
+
 		return super.onTouchEvent(event);
 	}
 	
