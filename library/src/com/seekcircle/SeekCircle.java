@@ -71,7 +71,7 @@ public class SeekCircle extends ProgressCircle
 	private boolean mTrackingTouch = false;
 	private int mRevolutions = 0;
 	private float mOldX;
-	private boolean enabled;
+	private boolean mEnabled;
 	
 	public SeekCircle(Context context, AttributeSet attrs, int defStyle)
 	{
@@ -89,11 +89,11 @@ public class SeekCircle extends ProgressCircle
 	}
 
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+		mEnabled = enabled;
 	}
 
 	public boolean isEnabled() {
-		return enabled;
+		return mEnabled;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class SeekCircle extends ProgressCircle
 		// TODO Handle return value better.
 		// TODO Moving outside view doesn't cancel notification nor progress updates
 
-		if (!enabled) { return false; }
+		if (!mEnabled) { return false; }
 
 		// Right hand coordinates X to the right, Y up
 		float x = event.getX() - mCenterX;
