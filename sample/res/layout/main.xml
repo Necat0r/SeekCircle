@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        seekcircle:min="10"
+        seekcircle:min="0"
         seekcircle:max="100"
         seekcircle:progress="25"
          />
