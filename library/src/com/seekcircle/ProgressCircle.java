@@ -20,6 +20,7 @@ public class ProgressCircle extends View
 	
 	protected float mRadius;
 	
+	protected int mMinProgress = 0;
 	protected int mMaxProgress = 100;
 	protected int mProgress = 0;
 	
@@ -60,7 +61,11 @@ public class ProgressCircle extends View
 		TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs, R.styleable.SeekCircle, 0, 0);
 		try
 		{
-			// Read and clamp max
+            // Read and clamp min
+            int min = attributes.getInteger(R.styleable.SeekCircle_min, 0);
+            mMinProgress = Math.max(min, 0);
+
+            // Read and clamp max
 			int max = attributes.getInteger(R.styleable.SeekCircle_max, 100);
 			mMaxProgress = Math.max(max, 1); 
 			
@@ -126,18 +131,20 @@ public class ProgressCircle extends View
 	{
 		// Center our canvas
 		canvas.translate(mCenterX, mCenterY);
-		
-		float rotation = 360.0f / (float) mMaxProgress;
-		for (int i = 0; i < mMaxProgress; ++i)
+
+		int relativeProgress = mProgress - mMinProgress;
+		int relativeMax = mMaxProgress - mMinProgress;
+		float rotation = 360.0f / (float) relativeMax;
+		for (int i = 0; i < relativeMax; ++i)
 		{
 			canvas.save();
 			
 			canvas.rotate((float) i * rotation);
 			canvas.translate(0, -mRadius);
-			
-			if (i < mProgress)
+
+			if (i < relativeProgress)
 			{
-				float bias = (float) i / (float) (mMaxProgress - 1);
+				float bias = (float) i / (float) (relativeMax - 1);
 				int color = interpolateColor(mColor1, mColor2, bias);
 				mPaint.setColor(color);
 			}
@@ -177,7 +184,29 @@ public class ProgressCircle extends View
 
 		return Color.HSVToColor(hsvColorB);
 	}
-	
+
+	/**
+	 * Get min progress
+	 *
+	 * @return Min progress
+	 */
+	public float getMin() { return mMinProgress; }
+
+	/**
+	 * Set min progress
+	 *
+	 * @param min
+	 */
+	public void setMin(int min)
+	{
+		int newMin = Math.max(0, min);
+		if (newMin != mMinProgress)
+			mMinProgress = newMin;
+
+		updateProgress(mProgress);
+		invalidate();
+	}
+
 	/**
 	 * Get max progress
 	 * 
@@ -230,7 +259,8 @@ public class ProgressCircle extends View
 	 */
 	public float getRatio()
 	{
-		return (float)mProgress / (float)mMaxProgress;
+		int relativeMax = mMaxProgress - mMinProgress;
+		return (float)(mProgress - mMinProgress) / (float)relativeMax;
 	}
 	
 	/**
@@ -242,8 +272,8 @@ public class ProgressCircle extends View
 	protected boolean updateProgress(int progress)
 	{
 		// Clamp progress
-		progress = Math.max(0, Math.min(mMaxProgress, progress));
-		
+		progress = Math.max(mMinProgress, Math.min(mMaxProgress, progress));
+
 		if (progress != mProgress)
 		{
 			mProgress = progress;

@@ -1,6 +1,7 @@
 <resources>
 
     <declare-styleable name="SeekCircle">
+        <attr name="min" format="integer" value="0" />
         <attr name="max" format="integer" value="100" />
         <attr name="progress" format="integer" value="0" />
         <attr name="startColor" format="color" />
@@ -8,6 +9,6 @@
         <attr name="inactiveColor" format="color" />
         <attr name="ringBias" format="float" />
         <attr name="sectionRatio" format="float" />
-        </declare-styleable>
+    </declare-styleable>
 
 </resources>

@@ -141,10 +141,12 @@ public class SeekCircle extends ProgressCircle
 				break;
 		}
 
+		int relativeMax = mMaxProgress - mMinProgress;
+
 		if (updateProgress) {
 			// Calculate absolute position [0, 1] with 0 & 1 both at 12-o-clock
 			float position = (float) ((Math.atan2(-x, -y) + Math.PI) / (Math.PI * 2.0));
-			int progress = Math.round(position * ((float) mMaxProgress));
+			int relativeProgress = Math.round(position * ((float) relativeMax));
 
 			if (event.getAction() != MotionEvent.ACTION_DOWN) {
 				updateRevolutions(x, y);
@@ -153,13 +155,13 @@ public class SeekCircle extends ProgressCircle
 
 				// Clamp progress
 				if (absPosition < 0.0f)
-					progress = 0;
+					relativeProgress = 0;
 				else if (absPosition > 1.0f)
-					progress = mMaxProgress;
+					relativeProgress = relativeMax;
 			}
 
 			mOldX = x;
-			updateTouchProgress(progress);
+			updateTouchProgress(mMinProgress + relativeProgress);
 
 			if (event.getAction() == MotionEvent.ACTION_DOWN && mOnSeekCircleChangeListener != null) {
 				mOnSeekCircleChangeListener.onStartTrackingTouch(this);
