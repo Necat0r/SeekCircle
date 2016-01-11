@@ -71,7 +71,7 @@ public class SeekCircle extends ProgressCircle
 	private boolean mTrackingTouch = false;
 	private int mRevolutions = 0;
 	private float mOldX;
-	private boolean mEnabled;
+	private boolean mEnabled = true;
 	
 	public SeekCircle(Context context, AttributeSet attrs, int defStyle)
 	{
