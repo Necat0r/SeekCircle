@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res/com.seekcircle.sample"
+    xmlns:seekcircle="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SampleActivity" >
@@ -11,7 +11,10 @@
         android:layout_height="match_parent"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        app:progress="25" />
+        seekcircle:min="10"
+        seekcircle:max="100"
+        seekcircle:progress="25"
+         />
 
     <TextView
         android:id="@+id/textProgress"
