@@ -101,7 +101,7 @@ public class ProgressCircle extends View {
         int height = MeasureSpec.getSize(heightMeasureSpec);
 
         if (width > height)
-            super.onMeasure(heightMeasureSpec, widthMeasureSpec);
+            super.onMeasure(heightMeasureSpec, heightMeasureSpec);
         else
             super.onMeasure(widthMeasureSpec, widthMeasureSpec);
 
